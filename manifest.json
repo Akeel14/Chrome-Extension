@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Daily Planner",
   "version": "1.0",
   "description": "A simple daily planner chrome extension.",
