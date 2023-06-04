@@ -3,8 +3,30 @@ document.addEventListener("DOMContentLoaded", function () {
   const addTaskButton = document.getElementById("addTaskButton");
   const taskList = document.getElementById("taskList");
 
-  let taskArray = JSON.parse(localStorage.getItem("tasks")) || [];
+  let taskArray = getTasksFromLocalStorage();
 
+  // Create
+  function createTask(taskText, isCompleted = false) {
+    return { text: taskText, completed: isCompleted };
+  }
+
+  // Read
+  function getTasksFromLocalStorage() {
+    return JSON.parse(localStorage.getItem("tasks")) || [];
+  }
+
+  // Update
+  function updateTasksInLocalStorage() {
+    localStorage.setItem("tasks", JSON.stringify(taskArray));
+  }
+
+  // Delete
+  function deleteTask(index) {
+    taskArray.splice(index, 1);
+    updateTasksInLocalStorage();
+  }
+
+  // Render
   function renderTasks() {
     taskList.innerHTML = ""; // Clear the current list of tasks
     taskArray.forEach((taskObj, index) => {
@@ -18,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
       checkbox.addEventListener("change", function () {
         taskObj.completed = checkbox.checked;
         taskTextElement.classList.toggle("completed", taskObj.completed); // Add/remove the class based on the new status
-        localStorage.setItem("tasks", JSON.stringify(taskArray));
+        updateTasksInLocalStorage();
       });
       taskItem.appendChild(checkbox);
 
@@ -32,8 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
       removeButton.classList.add("removeButton");
       removeButton.textContent = "X";
       removeButton.addEventListener("click", function () {
-        taskArray.splice(index, 1); // Remove the task from the array
-        localStorage.setItem("tasks", JSON.stringify(taskArray));
+        deleteTask(index);
         renderTasks(); // Re-render the tasks
       });
       taskItem.appendChild(removeButton);
@@ -46,8 +67,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const taskText = taskInput.value;
     if (taskText === "") return;
 
-    taskArray.push({ text: taskText, completed: false }); // Add the new task to the array
-    localStorage.setItem("tasks", JSON.stringify(taskArray));
+    const newTask = createTask(taskText);
+    taskArray.push(newTask); // Add the new task to the array
+    updateTasksInLocalStorage();
 
     taskInput.value = "";
     renderTasks(); // Re-render the tasks
